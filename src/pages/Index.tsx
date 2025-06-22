@@ -10,7 +10,6 @@ const Index = () => {
         <PhotoAlbumUploader />
       </div>
       
-      {/* Footer */}
       <footer className="relative z-10 text-center py-8 text-gray-500">
         <p>สร้างด้วย React + GSAP + TailwindCSS</p>
         <div className="flex justify-center items-center gap-2 mt-2">
