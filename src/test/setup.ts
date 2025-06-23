@@ -8,21 +8,25 @@ global.IntersectionObserver = class IntersectionObserver {
   thresholds: ReadonlyArray<number> = [0];
   
   constructor(
-    private callback: IntersectionObserverCallback,
-    private options?: IntersectionObserverInit
+    public callback: IntersectionObserverCallback,
+    public options?: IntersectionObserverInit
   ) {
-    this.root = options?.root || null;
-    this.rootMargin = options?.rootMargin || '0px';
-    this.thresholds = options?.threshold 
-      ? Array.isArray(options.threshold) 
+    if (options?.root) {
+      this.root = options.root;
+    }
+    if (options?.rootMargin) {
+      this.rootMargin = options.rootMargin;
+    }
+    if (options?.threshold) {
+      this.thresholds = Array.isArray(options.threshold) 
         ? options.threshold 
-        : [options.threshold]
-      : [0];
+        : [options.threshold];
+    }
   }
-  
-  disconnect() {}
+
   observe() {}
   unobserve() {}
+  disconnect() {}
   takeRecords(): IntersectionObserverEntry[] {
     return [];
   }
@@ -30,10 +34,10 @@ global.IntersectionObserver = class IntersectionObserver {
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
-  constructor(private callback: ResizeObserverCallback) {}
-  disconnect() {}
+  constructor(public callback: ResizeObserverCallback) {}
   observe() {}
   unobserve() {}
+  disconnect() {}
 };
 
 // Mock matchMedia
@@ -43,8 +47,8 @@ Object.defineProperty(window, 'matchMedia', {
     matches: false,
     media: query,
     onchange: null,
-    addListener: jest.fn(), // deprecated
-    removeListener: jest.fn(), // deprecated
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
     dispatchEvent: jest.fn(),
