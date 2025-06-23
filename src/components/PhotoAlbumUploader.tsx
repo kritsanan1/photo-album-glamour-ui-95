@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from "react";
 import { gsap } from "gsap";
 import { Upload, X, Plus, Trash2 } from "lucide-react";
@@ -7,6 +6,9 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import AuthButton from "./AuthButton";
+import MasonryGrid from "./MasonryGrid";
+import PhotoViewer from "./PhotoViewer";
+import SearchAndFilter from "./SearchAndFilter";
 import {
   createPhotoAlbum,
   uploadPhotoToStorage,
@@ -19,19 +21,37 @@ import {
   type AlbumPhoto
 } from "@/lib/photoAlbumApi";
 
+interface FilterOptions {
+  dateRange?: { start: Date; end: Date };
+  fileType?: string[];
+  sizeRange?: { min: number; max: number };
+  tags?: string[];
+}
+
+type SortOption = 'date-desc' | 'date-asc' | 'name-asc' | 'name-desc' | 'size-desc' | 'size-asc';
+
 export default function PhotoAlbumUploader() {
   const [user, setUser] = useState<User | null>(null);
   const [albums, setAlbums] = useState<PhotoAlbum[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState<PhotoAlbum | null>(null);
   const [albumPhotos, setAlbumPhotos] = useState<AlbumPhoto[]>([]);
+  const [filteredPhotos, setFilteredPhotos] = useState<AlbumPhoto[]>([]);
   const [albumName, setAlbumName] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
   
+  // Photo viewer state
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  
+  // Search and filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState<FilterOptions>({});
+  const [sortBy, setSortBy] = useState<SortOption>('date-desc');
+  
   const dropRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   // Authentication check
@@ -67,6 +87,60 @@ export default function PhotoAlbumUploader() {
       loadAlbumPhotos(selectedAlbum.id);
     }
   }, [selectedAlbum]);
+
+  // Apply search, filter, and sort
+  useEffect(() => {
+    let filtered = [...albumPhotos];
+
+    // Apply search
+    if (searchQuery) {
+      filtered = filtered.filter(photo =>
+        photo.file_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Apply filters
+    if (filters.fileType && filters.fileType.length > 0) {
+      filtered = filtered.filter(photo =>
+        filters.fileType!.includes(photo.file_type)
+      );
+    }
+
+    if (filters.dateRange) {
+      filtered = filtered.filter(photo => {
+        const photoDate = new Date(photo.created_at);
+        return photoDate >= filters.dateRange!.start && photoDate <= filters.dateRange!.end;
+      });
+    }
+
+    if (filters.sizeRange) {
+      filtered = filtered.filter(photo =>
+        photo.file_size >= filters.sizeRange!.min && photo.file_size <= filters.sizeRange!.max
+      );
+    }
+
+    // Apply sort
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'date-desc':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'date-asc':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'name-asc':
+          return a.file_name.localeCompare(b.file_name);
+        case 'name-desc':
+          return b.file_name.localeCompare(a.file_name);
+        case 'size-desc':
+          return b.file_size - a.file_size;
+        case 'size-asc':
+          return a.file_size - b.file_size;
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredPhotos(filtered);
+  }, [albumPhotos, searchQuery, filters, sortBy]);
 
   const loadUserAlbums = async () => {
     try {
@@ -300,6 +374,12 @@ export default function PhotoAlbumUploader() {
     }
   };
 
+  const handlePhotoClick = (photo: AlbumPhoto, index: number) => {
+    const photoIndex = filteredPhotos.findIndex(p => p.id === photo.id);
+    setCurrentPhotoIndex(photoIndex);
+    setIsViewerOpen(true);
+  };
+
   if (!user) {
     return (
       <div className="w-full max-w-4xl mx-auto p-8">
@@ -315,7 +395,7 @@ export default function PhotoAlbumUploader() {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-8">
+    <div className="w-full max-w-7xl mx-auto p-8">
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-5xl font-bold bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 bg-clip-text text-transparent mb-4">
@@ -415,7 +495,7 @@ export default function PhotoAlbumUploader() {
             ref={dropRef}
             className={cn(
               "relative flex flex-col items-center justify-center",
-              "border-2 border-dashed border-gray-300 rounded-2xl py-16 px-8 mb-12",
+              "border-2 border-dashed border-gray-300 rounded-2xl py-16 px-8 mb-8",
               "bg-gradient-to-br from-white via-orange-50 to-amber-50",
               "transition-all duration-300 cursor-pointer group",
               "shadow-lg hover:shadow-xl",
@@ -474,28 +554,41 @@ export default function PhotoAlbumUploader() {
         </>
       )}
 
-      {/* Photo Grid */}
+      {/* Search and Filter */}
       {selectedAlbum && albumPhotos.length > 0 && (
+        <SearchAndFilter
+          onSearch={setSearchQuery}
+          onFilter={setFilters}
+          onSort={setSortBy}
+          totalPhotos={albumPhotos.length}
+          filteredPhotos={filteredPhotos.length}
+        />
+      )}
+
+      {/* Photo Grid */}
+      {selectedAlbum && filteredPhotos.length > 0 && (
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-            รูปภาพในอัลบั้ม ({albumPhotos.length} รูป)
+            รูปภาพในอัลบั้ม ({filteredPhotos.length} รูป)
           </h2>
-          <div 
-            ref={gridRef}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-          >
-            {albumPhotos.map((photo) => (
-              <PhotoPreview 
-                key={photo.id}
-                photo={photo} 
-                onRemove={() => handleDeletePhoto(photo)}
-              />
-            ))}
-          </div>
+          <MasonryGrid
+            photos={filteredPhotos}
+            onPhotoClick={handlePhotoClick}
+            onPhotoDelete={handleDeletePhoto}
+          />
         </div>
       )}
 
-      {/* Empty State */}
+      {/* Photo Viewer */}
+      <PhotoViewer
+        photos={filteredPhotos}
+        currentIndex={currentPhotoIndex}
+        isOpen={isViewerOpen}
+        onClose={() => setIsViewerOpen(false)}
+        onNavigate={setCurrentPhotoIndex}
+      />
+
+      {/* Empty States */}
       {!selectedAlbum && albums.length === 0 && (
         <div className="text-center py-16">
           <div className="text-6xl mb-4 opacity-20">📸</div>
@@ -509,6 +602,14 @@ export default function PhotoAlbumUploader() {
           <div className="text-6xl mb-4 opacity-20">📷</div>
           <p className="text-gray-500 text-lg">ยังไม่มีรูปภาพในอัลบั้มนี้</p>
           <p className="text-gray-400">เริ่มต้นด้วยการอัปโหลดรูปภาพแรกของคุณ</p>
+        </div>
+      )}
+
+      {selectedAlbum && filteredPhotos.length === 0 && albumPhotos.length > 0 && (
+        <div className="text-center py-16">
+          <div className="text-6xl mb-4 opacity-20">🔍</div>
+          <p className="text-gray-500 text-lg">ไม่พบรูปภาพที่ตรงกับการค้นหา</p>
+          <p className="text-gray-400">ลองเปลี่ยนคำค้นหาหรือตัวกรองใหม่</p>
         </div>
       )}
     </div>
