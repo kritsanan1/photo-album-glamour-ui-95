@@ -177,6 +177,101 @@ export type Database = {
           },
         ]
       }
+      complaint_feedback: {
+        Row: {
+          comment: string | null
+          complaint_id: string | null
+          created_at: string | null
+          id: string
+          rating: number | null
+          user_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          complaint_id?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          complaint_id?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "complaint_feedback_complaint_id_fkey"
+            columns: ["complaint_id"]
+            isOneToOne: false
+            referencedRelation: "complaints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      complaints: {
+        Row: {
+          admin_response: string | null
+          category: Database["public"]["Enums"]["complaint_category"]
+          created_at: string | null
+          description: string
+          id: string
+          is_anonymous: boolean | null
+          location_lat: number | null
+          location_lng: number | null
+          location_text: string | null
+          photo_url: string | null
+          priority: number | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["complaint_status"] | null
+          title: string
+          updated_at: string | null
+          user_id: string | null
+          voice_memo_url: string | null
+        }
+        Insert: {
+          admin_response?: string | null
+          category: Database["public"]["Enums"]["complaint_category"]
+          created_at?: string | null
+          description: string
+          id?: string
+          is_anonymous?: boolean | null
+          location_lat?: number | null
+          location_lng?: number | null
+          location_text?: string | null
+          photo_url?: string | null
+          priority?: number | null
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["complaint_status"] | null
+          title: string
+          updated_at?: string | null
+          user_id?: string | null
+          voice_memo_url?: string | null
+        }
+        Update: {
+          admin_response?: string | null
+          category?: Database["public"]["Enums"]["complaint_category"]
+          created_at?: string | null
+          description?: string
+          id?: string
+          is_anonymous?: boolean | null
+          location_lat?: number | null
+          location_lng?: number | null
+          location_text?: string | null
+          photo_url?: string | null
+          priority?: number | null
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["complaint_status"] | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string | null
+          voice_memo_url?: string | null
+        }
+        Relationships: []
+      }
       content_library: {
         Row: {
           audio_url: string | null
@@ -445,6 +540,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          related_complaint_id: string | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          related_complaint_id?: string | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          related_complaint_id?: string | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_related_complaint_id_fkey"
+            columns: ["related_complaint_id"]
+            isOneToOne: false
+            referencedRelation: "complaints"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       photo_albums: {
         Row: {
@@ -962,6 +1095,39 @@ export type Database = {
           },
         ]
       }
+      user_profiles: {
+        Row: {
+          created_at: string | null
+          full_name: string | null
+          id: string
+          phone_number: string | null
+          points: number | null
+          role: Database["public"]["Enums"]["user_role"] | null
+          updated_at: string | null
+          village: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          phone_number?: string | null
+          points?: number | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string | null
+          village?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          phone_number?: string | null
+          points?: number | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string | null
+          village?: string | null
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           avatar_url: string | null
@@ -995,8 +1161,30 @@ export type Database = {
         Args: { heart_rate: number }
         Returns: string
       }
+      award_points: {
+        Args: { user_uuid: string; points_to_add: number }
+        Returns: undefined
+      }
+      create_notification: {
+        Args: {
+          user_uuid: string
+          notification_title: string
+          notification_message: string
+          complaint_uuid?: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
+      complaint_category:
+        | "road"
+        | "water"
+        | "waste"
+        | "electricity"
+        | "public_safety"
+        | "environment"
+        | "other"
+      complaint_status: "open" | "in_progress" | "resolved" | "closed"
       pricing_plan_interval: "day" | "week" | "month" | "year"
       pricing_type: "one_time" | "recurring"
       subscription_status:
@@ -1007,6 +1195,7 @@ export type Database = {
         | "incomplete_expired"
         | "past_due"
         | "unpaid"
+      user_role: "resident" | "admin" | "official"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1122,6 +1311,16 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      complaint_category: [
+        "road",
+        "water",
+        "waste",
+        "electricity",
+        "public_safety",
+        "environment",
+        "other",
+      ],
+      complaint_status: ["open", "in_progress", "resolved", "closed"],
       pricing_plan_interval: ["day", "week", "month", "year"],
       pricing_type: ["one_time", "recurring"],
       subscription_status: [
@@ -1133,6 +1332,7 @@ export const Constants = {
         "past_due",
         "unpaid",
       ],
+      user_role: ["resident", "admin", "official"],
     },
   },
 } as const

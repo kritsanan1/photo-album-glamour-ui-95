@@ -1,0 +1,165 @@
+
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font: bold 16px Arial; text-anchor: middle; }
+      .subtitle { font: 12px Arial; text-anchor: middle; }
+      .label { font: 11px Arial; text-anchor: middle; }
+      .small-label { font: 9px Arial; text-anchor: middle; }
+      .component-box { fill: #e3f2fd; stroke: #1976d2; stroke-width: 2; }
+      .page-box { fill: #f3e5f5; stroke: #7b1fa2; stroke-width: 2; }
+      .api-box { fill: #e8f5e8; stroke: #388e3c; stroke-width: 2; }
+      .db-box { fill: #fff3e0; stroke: #f57c00; stroke-width: 2; }
+      .auth-box { fill: #ffebee; stroke: #d32f2f; stroke-width: 2; }
+      .storage-box { fill: #e0f2f1; stroke: #00796b; stroke-width: 2; }
+      .arrow { stroke: #666; stroke-width: 2; marker-end: url(#arrowhead); }
+      .data-flow { stroke: #2196f3; stroke-width: 2; stroke-dasharray: 5,5; marker-end: url(#arrowhead-blue); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
+    </marker>
+    <marker id="arrowhead-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2196f3" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="600" y="30" class="title">Photo Album Glamour - System Architecture</text>
+
+  <!-- Frontend Layer -->
+  <rect x="50" y="60" width="500" height="300" fill="none" stroke="#666" stroke-width="2" stroke-dasharray="10,5"/>
+  <text x="300" y="80" class="subtitle">Frontend (React + TypeScript)</text>
+
+  <!-- Pages -->
+  <rect x="70" y="100" width="120" height="60" class="page-box"/>
+  <text x="130" y="125" class="label">Index Page</text>
+  <text x="130" y="140" class="small-label">Main landing</text>
+
+  <rect x="70" y="180" width="120" height="60" class="page-box"/>
+  <text x="130" y="205" class="label">NotFound Page</text>
+  <text x="130" y="220" class="small-label">404 handler</text>
+
+  <!-- Components -->
+  <rect x="220" y="100" width="140" height="80" class="component-box"/>
+  <text x="290" y="125" class="label">PhotoAlbumUploader</text>
+  <text x="290" y="140" class="small-label">Core functionality</text>
+  <text x="290" y="155" class="small-label">GSAP animations</text>
+
+  <rect x="220" y="190" width="140" height="60" class="component-box"/>
+  <text x="290" y="215" class="label">AuthButton</text>
+  <text x="290" y="230" class="small-label">Google OAuth</text>
+
+  <!-- UI Components -->
+  <rect x="380" y="100" width="120" height="140" class="component-box"/>
+  <text x="440" y="125" class="label">UI Components</text>
+  <text x="440" y="145" class="small-label">Shadcn/ui</text>
+  <text x="440" y="160" class="small-label">• Button</text>
+  <text x="440" y="175" class="small-label">• Toast</text>
+  <text x="440" y="190" class="small-label">• Dialog</text>
+  <text x="440" y="205" class="small-label">• Form</text>
+  <text x="440" y="220" class="small-label">• 35+ more</text>
+
+  <!-- API Layer -->
+  <rect x="50" y="380" width="200" height="120" fill="none" stroke="#666" stroke-width="2" stroke-dasharray="10,5"/>
+  <text x="150" y="400" class="subtitle">API Layer</text>
+
+  <rect x="70" y="420" width="160" height="60" class="api-box"/>
+  <text x="150" y="445" class="label">photoAlbumApi.ts</text>
+  <text x="150" y="460" class="small-label">CRUD operations</text>
+
+  <!-- Backend Services -->
+  <rect x="300" y="380" width="450" height="200" fill="none" stroke="#666" stroke-width="2" stroke-dasharray="10,5"/>
+  <text x="525" y="400" class="subtitle">Backend Services (Supabase)</text>
+
+  <!-- Authentication -->
+  <rect x="320" y="420" width="120" height="80" class="auth-box"/>
+  <text x="380" y="445" class="label">Authentication</text>
+  <text x="380" y="460" class="small-label">Google OAuth</text>
+  <text x="380" y="475" class="small-label">Session mgmt</text>
+
+  <!-- Database -->
+  <rect x="460" y="420" width="140" height="80" class="db-box"/>
+  <text x="530" y="440" class="label">PostgreSQL DB</text>
+  <text x="530" y="455" class="small-label">• photo_albums</text>
+  <text x="530" y="470" class="small-label">• album_photos</text>
+  <text x="530" y="485" class="small-label">• profiles (RLS)</text>
+
+  <!-- Storage -->
+  <rect x="620" y="420" width="120" height="80" class="storage-box"/>
+  <text x="680" y="445" class="label">File Storage</text>
+  <text x="680" y="460" class="small-label">Images bucket</text>
+  <text x="680" y="475" class="small-label">Public access</text>
+
+  <!-- Configuration -->
+  <rect x="320" y="520" width="280" height="40" fill="#f5f5f5" stroke="#999"/>
+  <text x="460" y="540" class="label">Supabase Client Configuration</text>
+
+  <!-- External Services -->
+  <rect x="800" y="380" width="350" height="200" fill="none" stroke="#666" stroke-width="2" stroke-dasharray="10,5"/>
+  <text x="975" y="400" class="subtitle">External Services</text>
+
+  <rect x="820" y="420" width="120" height="60" class="auth-box"/>
+  <text x="880" y="445" class="label">Google OAuth</text>
+  <text x="880" y="460" class="small-label">Identity provider</text>
+
+  <rect x="960" y="420" width="120" height="60" class="component-box"/>
+  <text x="1020" y="445" class="label">GSAP Library</text>
+  <text x="1020" y="460" class="small-label">Animations</text>
+
+  <rect x="820" y="500" width="260" height="60" fill="#f0f0f0" stroke="#999"/>
+  <text x="950" y="525" class="label">Third-party Dependencies</text>
+  <text x="950" y="540" class="small-label">React Query, Tailwind CSS, Lucide Icons</text>
+
+  <!-- Data Flow Arrows -->
+  <!-- Page to Component -->
+  <line x1="190" y1="130" x2="220" y2="140" class="arrow"/>
+  
+  <!-- Component to API -->
+  <line x1="290" y1="180" x2="150" y2="420" class="data-flow"/>
+  
+  <!-- API to Supabase -->
+  <line x1="230" y1="450" x2="320" y2="450" class="data-flow"/>
+  
+  <!-- Auth flow -->
+  <line x1="290" y1="220" x2="380" y2="420" class="data-flow"/>
+  
+  <!-- Database operations -->
+  <line x1="440" y1="460" x2="460" y2="460" class="arrow"/>
+  
+  <!-- Storage operations -->
+  <line x1="600" y1="460" x2="620" y2="460" class="arrow"/>
+  
+  <!-- External Google OAuth -->
+  <line x1="380" y1="420" x2="820" y2="450" class="data-flow"/>
+  
+  <!-- GSAP animations -->
+  <line x1="290" y1="100" x2="960" y2="450" class="data-flow"/>
+
+  <!-- Legend -->
+  <rect x="50" y="620" width="500" height="120" fill="none" stroke="#666"/>
+  <text x="300" y="640" class="subtitle">Component Legend</text>
+  
+  <rect x="70" y="650" width="20" height="15" class="page-box"/>
+  <text x="100" y="662" class="small-label">Pages/Routes</text>
+  
+  <rect x="200" y="650" width="20" height="15" class="component-box"/>
+  <text x="230" y="662" class="small-label">React Components</text>
+  
+  <rect x="350" y="650" width="20" height="15" class="api-box"/>
+  <text x="380" y="662" class="small-label">API/Services</text>
+  
+  <rect x="70" y="680" width="20" height="15" class="db-box"/>
+  <text x="100" y="692" class="small-label">Database</text>
+  
+  <rect x="200" y="680" width="20" height="15" class="auth-box"/>
+  <text x="230" y="692" class="small-label">Authentication</text>
+  
+  <rect x="350" y="680" width="20" height="15" class="storage-box"/>
+  <text x="380" y="692" class="small-label">File Storage</text>
+
+  <line x1="70" y1="710" x2="100" y2="710" class="arrow"/>
+  <text x="130" y="715" class="small-label">Direct Connection</text>
+  
+  <line x1="250" y1="710" x2="280" y2="710" class="data-flow"/>
+  <text x="310" y="715" class="small-label">Data Flow</text>
+</svg>
