@@ -2,11 +2,15 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { LogIn, LogOut, User as UserIcon } from "lucide-react";
+import { LogIn, LogOut, User as UserIcon, Settings, Trash2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import AccountDeletionDialog from "./AccountDeletionDialog";
 
 export default function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     // Get initial session
@@ -50,19 +54,42 @@ export default function AuthButton() {
 
   if (user) {
     return (
-      <div className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-md">
-        <div className="flex items-center gap-2">
-          <UserIcon className="w-5 h-5 text-orange-500" />
-          <span className="text-gray-700">สวัสดี, {user.user_metadata?.full_name || user.email}</span>
+      <>
+        <div className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-md">
+          <div className="flex items-center gap-2">
+            <UserIcon className="w-5 h-5 text-orange-500" />
+            <span className="text-gray-700">สวัสดี, {user.user_metadata?.full_name || user.email}</span>
+          </div>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Settings className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={signOut}>
+                <LogOut className="w-4 h-4 mr-2" />
+                ออกจากระบบ
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={() => setShowDeleteDialog(true)}
+                className="text-red-600 focus:text-red-600"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                ลบบัญชี
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <button
-          onClick={signOut}
-          className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-        >
-          <LogOut className="w-4 h-4" />
-          ออกจากระบบ
-        </button>
-      </div>
+
+        <AccountDeletionDialog
+          isOpen={showDeleteDialog}
+          onClose={() => setShowDeleteDialog(false)}
+          userEmail={user.email || ''}
+        />
+      </>
     );
   }
 

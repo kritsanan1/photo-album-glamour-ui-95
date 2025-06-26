@@ -1363,6 +1363,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      delete_album_photos_from_storage: {
+        Args: { album_uuid: string }
+        Returns: undefined
+      }
+      delete_user_account: {
+        Args: { user_uuid: string }
+        Returns: undefined
+      }
       generate_complaint_id: {
         Args: Record<PropertyKey, never>
         Returns: string
