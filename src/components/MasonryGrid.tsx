@@ -66,8 +66,7 @@ export default function MasonryGrid({ photos, onPhotoClick, onPhotoDelete }: Mas
             { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power2.out" }
           );
         },
-        start: "top 90%",
-        refreshPriority: -1
+        start: "top 90%"
       });
     }, gridRef);
 

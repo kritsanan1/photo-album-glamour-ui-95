@@ -282,7 +282,7 @@ export default function PhotoAlbumUploader() {
 
       // Animate new photos in
       setTimeout(() => {
-        const newElements = gridRef.current?.querySelectorAll('.photo-item:first-child');
+        const newElements = document.querySelectorAll('.photo-item:first-child');
         if (newElements) {
           gsap.fromTo(newElements, 
             { scale: 0, opacity: 0, y: 30 },
@@ -612,91 +612,6 @@ export default function PhotoAlbumUploader() {
           <p className="text-gray-400">ลองเปลี่ยนคำค้นหาหรือตัวกรองใหม่</p>
         </div>
       )}
-    </div>
-  );
-}
-
-// Photo Preview Component
-function PhotoPreview({ 
-  photo, 
-  onRemove 
-}: { 
-  photo: AlbumPhoto; 
-  onRemove: () => void; 
-}) {
-  const [isHovered, setIsHovered] = useState(false);
-  const photoRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    if (photoRef.current) {
-      gsap.to(photoRef.current, { 
-        scale: 1.05, 
-        rotationY: 5,
-        z: 50,
-        duration: 0.3, 
-        ease: "power2.out" 
-      });
-    }
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    if (photoRef.current) {
-      gsap.to(photoRef.current, { 
-        scale: 1, 
-        rotationY: 0,
-        z: 0,
-        duration: 0.3, 
-        ease: "power2.out" 
-      });
-    }
-  };
-
-  return (
-    <div
-      ref={photoRef}
-      className="photo-item relative group overflow-hidden rounded-xl shadow-lg bg-white"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      style={{ perspective: "1000px" }}
-    >
-      <div className="aspect-square relative overflow-hidden">
-        <img
-          src={photo.upload_url}
-          alt={photo.file_name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-        
-        <div className={cn(
-          "absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent",
-          "opacity-0 transition-opacity duration-300",
-          isHovered && "opacity-100"
-        )}>
-          <div className="absolute top-4 right-4 flex gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemove();
-              }}
-              className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors duration-200"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          <div className="absolute bottom-4 left-4 right-4">
-            <p className="text-white font-semibold truncate">
-              {photo.file_name}
-            </p>
-            <p className="text-white/80 text-sm">
-              {(photo.file_size / 1024 / 1024).toFixed(2)} MB
-            </p>
-          </div>
-        </div>
-
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform rotate-12 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-700 pointer-events-none"></div>
-      </div>
     </div>
   );
 }
